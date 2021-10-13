@@ -1,6 +1,6 @@
 #* Variables
-SHELL := /usr/bin/env bash
 PYTHON := python3
+OS := $(shell uname -o)
 
 #################################
 # Poetry install/uninstall
@@ -18,3 +18,10 @@ poetry-remove:
 prepare-project:
 	poetry install
 	poetry run pre-commit install
+
+    ifeq ($(OS),GNU/Linux)
+		chmod +x ./git_hook/git-hook.sh
+		./git_hook/git-hook.sh
+    else
+        git_hook\git-hook.bat
+    endif
