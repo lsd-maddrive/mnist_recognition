@@ -41,7 +41,7 @@ prepare-project:
 		chmod +x ./git_hook/git-hook.sh
 		./git_hook/git-hook.sh
     else
-        git_hook\git-hook.bat
+		git_hook\git-hook.bat
     endif
 
 #* Installation
