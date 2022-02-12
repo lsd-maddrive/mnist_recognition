@@ -16,7 +16,6 @@ def color_segmentation (img:np.ndarray,masks:List[np.ndarray]):
     final_result (np.ndarray): image with color segmentetion
     """
 
-
     full_mask=0                                             # Задаем переменную для будующей маски 
     for i in range (len(masks)):                            # Проходимся по списку массок и объединяем их в общую маску                   
         full_mask+=masks[i]
