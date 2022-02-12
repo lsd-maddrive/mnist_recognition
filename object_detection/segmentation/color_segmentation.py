@@ -1,12 +1,28 @@
 import cv2  
 import numpy as np
+from typing import List
 
 
-def color_segmentation (img:int,limit:int):
-    full_mask=0                                         # Задаем переменную для будующей маски 
-    hsv_img=cv2.cvtColor(img, cv2.COLOR_RGB2HSV)        # Создаем копию изображения в формате HSV
-    for i in range (len(limit))[::2]:                   # Проходимся по списку ограничений 
-                                                        #(выбираем каждый второй элемент тк параметры для цвета идут парой)
-        full_mask+=cv2.inRange(hsv_img, limit[i], limit[i+1])   # Создаем Маску по цвету и объединяем в общую
+def color_segmentation (img:np.ndarray,masks:List[np.ndarray]):
+
+    """ 
+    Description of the Function
+
+    Parameters: 
+    img (np.ndarray): Original image 
+    masks (List[np.ndarray]) : List of masks which is to be applied to image 
+
+    Returns:
+    final_result (np.ndarray): image with color segmentetion
+    """
+
+
+    full_mask=0                                             # Задаем переменную для будующей маски 
+    for i in range (len(masks)):                            # Проходимся по списку массок и объединяем их в общую маску                   
+        full_mask+=masks[i]
     final_result = cv2.bitwise_and(img, img, mask=full_mask)    # Создаем изображение с наложенной маской 
     return final_result
+
+
+    
+    
