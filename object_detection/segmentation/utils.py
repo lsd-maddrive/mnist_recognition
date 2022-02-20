@@ -2,17 +2,6 @@ import cv2
 import numpy as np
 
 
-def TrackbarCallback(pos: int) -> None:
-    """
-    Callback function for Trackbar.
-    If the callback is the NULL pointer, no callbacks are called, but only value is updated.
-
-    Parameters:
-    pos(int): Сurrent position of the specified trackbar.
-
-    """
-
-
 def choose_threshold(img: np.ndarray) -> np.ndarray:
     """
     Description of the Function
@@ -26,7 +15,15 @@ def choose_threshold(img: np.ndarray) -> np.ndarray:
     Returns:
     mask (np.ndarray): mask for image segmentation based on choosen parametrs
     """
-    cv2.namedWindow(f"Color Track Bar", cv2.WINDOW_NORMAL)
+
+    def TrackbarCallback(pos: int) -> None:
+        """
+        Callback function for Trackbar.
+        Parameters:
+        pos(int): Сurrent position of the specified trackbar.
+        """
+
+    cv2.namedWindow("Color Track Bar", cv2.WINDOW_NORMAL)
     cv2.createTrackbar("low_hue", "Color Track Bar", 0, 255, TrackbarCallback)
     cv2.createTrackbar("low_sat", "Color Track Bar", 0, 255, TrackbarCallback)
     cv2.createTrackbar("low_val", "Color Track Bar", 0, 255, TrackbarCallback)

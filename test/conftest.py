@@ -1,8 +1,9 @@
+import os
+import sys
+
 import cv2
 import numpy as np
 import pytest
-import os
-import sys
 import skimage.io as io
 
 PROJECT_ROOT = os.path.abspath(
@@ -39,8 +40,7 @@ def test_masks_1(test_data_1):
     mask_1 = cv2.inRange(
         cv2.cvtColor(test_data_1, cv2.COLOR_RGB2HSV), low1, high1
     )
-    list_masks_1 = [mask_1]
-    return list_masks_1
+    return [mask_1]
 
 
 @pytest.fixture
@@ -68,8 +68,7 @@ def test_masks_2(test_data_2):
     mask_2 = cv2.inRange(
         cv2.cvtColor(test_data_2, cv2.COLOR_RGB2HSV), low2, high2
     )
-    list_masks_2 = [mask_2]
-    return list_masks_2
+    return [mask_2]
 
 
 @pytest.fixture
