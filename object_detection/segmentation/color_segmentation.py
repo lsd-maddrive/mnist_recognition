@@ -1,12 +1,12 @@
+from typing import List
+
 import cv2
 import numpy as np
-from typing import List
 
 
 def color_segmentation(img: np.ndarray, masks: List[np.ndarray]) -> np.ndarray:
 
     """
-    Description of the Function
     Function use masks to create a segemnted image.
 
     Parameters:

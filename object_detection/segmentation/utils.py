@@ -1,19 +1,20 @@
+from typing import List
+
 import cv2
 import numpy as np
 
 
-def choose_threshold(img: np.ndarray) -> np.ndarray:
+def choose_threshold(img: np.ndarray) -> tuple([np.array, List[int]]):
     """
-    Description of the Function
     Function for creating mask for segmentaion.
     It will let the user choose the value of mask parametrs by using the Trackbar.
 
     Parameters:
     img (np.ndarray): Original image
 
-
     Returns:
     mask (np.ndarray): mask for image segmentation based on choosen parametrs
+    thershold (List[int]): List of choosen thresholds - low color and high color
     """
 
     def TrackbarCallback(pos: int) -> None:
@@ -55,4 +56,4 @@ def choose_threshold(img: np.ndarray) -> np.ndarray:
             break
 
     cv2.destroyAllWindows()
-    return mask
+    return mask, [low_color, high_color]

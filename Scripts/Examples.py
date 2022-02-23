@@ -12,10 +12,11 @@ from object_detection.segmentation.utils import choose_threshold
 
 def test_choose_threshold_func(path):
     test_image = io.imread(path)
-    mask = choose_threshold(test_image)
-    return mask
+    mask, thresholds = choose_threshold(test_image)
+    return mask, thresholds
 
 
-path = os.path.join(PROJECT_ROOT, "test", "test_data", "img1.jpg")
-result = test_choose_threshold_func(path)
-print(result)
+if __name__ == "__main__":
+    path = os.path.join(PROJECT_ROOT, "test", "test_data", "img1.jpg")
+    result, thres = test_choose_threshold_func(path)
+    print(f"Result mask:\n{result},\n Limits Low & High:{thres}")
