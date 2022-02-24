@@ -4,7 +4,6 @@ default_language_version:
 default_stages: [commit, push]
 
 repos:
-  # https://pre-commit.com/hooks.html
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v3.4.0
     hooks:
