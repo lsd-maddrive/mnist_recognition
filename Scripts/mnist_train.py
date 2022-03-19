@@ -2,7 +2,8 @@ import os
 import sys
 
 CURRENT_DIR = os.path.dirname(os.path.abspath("__file__"))
-sys.path.append(CURRENT_DIR)
+ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
+sys.path.append(ROOT_DIR)
 
 import numpy as np
 import torch
@@ -17,23 +18,27 @@ from object_detection.mnist_model import MNIST
 CONFIG = {"batch_size": 200, "epoch": 100, "lr_rate": 0.01, "propotion": 0.7}
 
 
-# загружаем обучающую выборку
-train_data = torchvision.datasets.MNIST(
-    "mnist_content", train=True, transform=transforms.ToTensor(), download=True
-)
-# разделяем обучающую выборку на обучающую и валидационную выборки
-# 70% для обучения, 30% для валидации
-train_size = int(len(train_data) * CONFIG["propotion"])
-valid_size = len(train_data) - train_size
-train_data, valid_data = torch.utils.data.random_split(
-    train_data, [train_size, valid_size]
-)
-
 # Определим устройство, на котором будут выполняться вычисления
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
-def getLoaders():
+def get_loaders():
+
+    # загружаем обучающую выборку
+    train_data = torchvision.datasets.MNIST(
+        "mnist_content",
+        train=True,
+        transform=transforms.ToTensor(),
+        download=True,
+    )
+    # разделяем обучающую выборку на обучающую и валидационную выборки
+    # 70% для обучения, 30% для валидации
+    train_size = int(len(train_data) * CONFIG["propotion"])
+    valid_size = len(train_data) - train_size
+    train_data, valid_data = torch.utils.data.random_split(
+        train_data, [train_size, valid_size]
+    )
+
     # Создаём лоядеры данных.
     # так как модель ожидает данные в определённой форме
     train_dataloader = torch.utils.data.DataLoader(
@@ -42,6 +47,7 @@ def getLoaders():
     valid_dataloader = torch.utils.data.DataLoader(
         dataset=valid_data, batch_size=CONFIG["batch_size"], shuffle=False
     )
+
     return train_dataloader, valid_dataloader
 
 
@@ -71,16 +77,18 @@ def main():
 
     best_val_loss = None
 
+    train_dataloader, valid_dataloader = get_loaders()
+
     for epoch in range(NUM_EPOCHS):
         print(f"--- Epoch {epoch} ---")
         for phase in ["train", "val"]:
             epoch_loss = []
             if phase == "train":
                 model.train()
-                loader = getLoaders()[0]  # train_dataloader
+                loader = train_dataloader
             else:
                 model.eval()
-                loader = getLoaders()[1]  # valid_dataloader
+                loader = valid_dataloader
 
             for images, labels in tqdm(
                 loader, desc=f"{phase.upper()} Processing"
