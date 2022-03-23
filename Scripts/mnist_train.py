@@ -100,7 +100,6 @@ def main():
 
                 optimizer.zero_grad()
                 with torch.set_grad_enabled(phase == "train"):
-                    print(images.shape)
                     output = model(images)
                     loss = criterion(output, labels)
                     if phase == "train":
