@@ -16,8 +16,9 @@ from object_detection.mnist_model import MNIST
 class Inference:
     def __init__(self, model, device) -> None:
         self._logger = logging.getLogger(self.__class__.__name__)
-        self.model = model
-        self.device = device
+        self._model = model
+        self._device = device
+        self._prepare_model()
 
     def _prepare_model(self):
         if self._device is None:
@@ -51,10 +52,10 @@ class Inference:
         image = image.reshape(-1, 28 * 28)
         image_t = torch.from_numpy(image)
         image_t = image_t.float()
-        image_t = image_t.to(self.device)
+        image_t = image_t.to(self._device)
 
         with torch.no_grad():
-            output = self.model(image_t)
+            output = self._model(image_t)
             _, prediction = torch.max(output, 1)
 
         return prediction.tolist()[0]

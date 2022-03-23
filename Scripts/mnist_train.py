@@ -1,8 +1,8 @@
 import os
 import sys
 
-CURRENT_DIR = os.path.dirname(os.path.abspath("__file__"))
-ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+ROOT_DIR = os.path.abspath(os.path.join(CURRENT_DIR, os.pardir))
 sys.path.append(ROOT_DIR)
 
 import numpy as np
@@ -71,7 +71,7 @@ def main():
     NUM_EPOCHS = CONFIG["epoch"]
 
     checkpoint_dpath = os.path.join(
-        CURRENT_DIR, "checkpoints", "mnist_checkpoints"
+        ROOT_DIR, "checkpoints", "mnist_checkpoints"
     )
     os.makedirs(checkpoint_dpath, exist_ok=True)
 
@@ -94,6 +94,9 @@ def main():
                 loader, desc=f"{phase.upper()} Processing"
             ):
                 images = images.reshape(-1, 28 * 28)
+                images = images.to(DEVICE)
+
+                labels = labels.to(DEVICE)
 
                 optimizer.zero_grad()
                 with torch.set_grad_enabled(phase == "train"):
