@@ -137,3 +137,6 @@ mnist_content
 
 # MNIST checkpoints
 checkpoints
+
+# Tensorboard runs
+runs

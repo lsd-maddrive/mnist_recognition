@@ -10,10 +10,13 @@ import torch
 import torch.nn as nn
 import torchvision
 from torch.optim.lr_scheduler import ReduceLROnPlateau
+from torch.utils.tensorboard import SummaryWriter
 from torchvision.transforms import transforms
 from tqdm import tqdm
 
 from object_detection.mnist_model import MNIST
+
+writer = SummaryWriter()
 
 CONFIG = {"batch_size": 200, "epoch": 100, "lr_rate": 0.01, "propotion": 0.7}
 
@@ -103,6 +106,7 @@ def main():
                     output = model(images)
                     loss = criterion(output, labels)
                     if phase == "train":
+                        writer.add_scalar("Loss/train", loss, epoch)
                         loss.backward()
                         optimizer.step()
 
@@ -114,6 +118,7 @@ def main():
             )
 
             if phase == "val":
+                writer.add_scalar("Loss/valid", loss, epoch)
                 if best_val_loss is None or epoch_mean_loss < best_val_loss:
                     best_val_loss = epoch_mean_loss
 
@@ -125,6 +130,9 @@ def main():
                     torch.save(save_state, checkpoint_path)
                 else:
                     scheduler.step(epoch_mean_loss)
+                    writer.add_scalar(
+                        " Learning rate", optimizer.param_groups[0]["lr"], epoch
+                    )
 
         checkpoint_path = os.path.join(checkpoint_dpath, "last.pth")
         print(f"* Last state saved to {checkpoint_path}")
