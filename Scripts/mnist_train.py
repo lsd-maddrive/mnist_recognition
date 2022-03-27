@@ -16,8 +16,6 @@ from tqdm import tqdm
 
 from object_detection.mnist_model import MNIST
 
-writer = SummaryWriter()
-
 CONFIG = {"batch_size": 200, "epoch": 100, "lr_rate": 0.01, "propotion": 0.7}
 
 
@@ -56,6 +54,7 @@ def get_loaders():
 
 def main():
 
+    writer = SummaryWriter()
     # Объект нашей модели
     model = MNIST()
     # сразу отправить модель на устройство
