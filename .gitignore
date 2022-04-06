@@ -140,3 +140,6 @@ checkpoints
 
 # Tensorboard runs
 runs
+
+# mnist predictions content
+*.cvs
