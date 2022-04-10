@@ -142,4 +142,4 @@ checkpoints
 runs
 
 # mnist predictions content
-*.cvs
+results
