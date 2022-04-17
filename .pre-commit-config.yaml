@@ -77,3 +77,4 @@ repos:
         args:
           - -s
           - B311,B301,B403,B303
+        exclude: /test
