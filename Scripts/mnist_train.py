@@ -15,6 +15,7 @@ from torchvision.transforms import transforms
 from tqdm import tqdm
 
 from object_detection.mnist_model import MNIST
+from object_detection.transform import Invertor
 
 CONFIG = {"batch_size": 200, "epoch": 100, "lr_rate": 0.01, "propotion": 0.7}
 
@@ -24,12 +25,13 @@ DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
 def get_loaders():
+    data_transform = transforms.Compose([Invertor(), transforms.ToTensor()])
 
     # загружаем обучающую выборку
     train_data = torchvision.datasets.MNIST(
         "mnist_content",
         train=True,
-        transform=transforms.ToTensor(),
+        transform=data_transform,
         download=True,
     )
     # разделяем обучающую выборку на обучающую и валидационную выборки
