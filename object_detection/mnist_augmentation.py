@@ -5,9 +5,9 @@ import numpy as np
 
 class AlbuAugmentation:
     def __init__(self):
-        ssr_params = dict(
+        sr_params = dict(
             border_mode=cv2.BORDER_CONSTANT,
-            p=0.9,
+            p=0.2,
         )
 
         self.description = [
@@ -18,8 +18,8 @@ class AlbuAugmentation:
                         scale_limit=0,
                         rotate_limit=0,
                         interpolation=3,
-                        border_mode=ssr_params["border_mode"],
-                        p=0.9,
+                        border_mode=sr_params["border_mode"],
+                        p=sr_params["p"],
                         value=255,  # white background for better representation
                     ),
                     albu.ShiftScaleRotate(  # scale
@@ -27,8 +27,8 @@ class AlbuAugmentation:
                         scale_limit=0.25,
                         rotate_limit=0,
                         interpolation=3,
-                        border_mode=ssr_params["border_mode"],
-                        p=ssr_params["p"],
+                        border_mode=sr_params["border_mode"],
+                        p=sr_params["p"],
                         value=255,  # white background for better representation
                     ),
                     albu.ShiftScaleRotate(  # rotate
@@ -36,8 +36,8 @@ class AlbuAugmentation:
                         scale_limit=0,
                         rotate_limit=20,
                         interpolation=3,
-                        border_mode=ssr_params["border_mode"],
-                        p=ssr_params["p"],
+                        border_mode=sr_params["border_mode"],
+                        p=sr_params["p"],
                         value=255,  # white background for better representation
                     ),
                     albu.ShiftScaleRotate(  # shift + scale + rotate
@@ -45,8 +45,8 @@ class AlbuAugmentation:
                         scale_limit=0.2,
                         rotate_limit=20,
                         interpolation=3,
-                        border_mode=ssr_params["border_mode"],
-                        p=ssr_params["p"],
+                        border_mode=sr_params["border_mode"],
+                        p=sr_params["p"],
                         value=255,  # white background for better representation
                     ),
                     albu.RandomBrightnessContrast(  # Brightness + Contrast
@@ -54,11 +54,11 @@ class AlbuAugmentation:
                         contrast_limit=0.25,
                         brightness_by_max=True,
                         always_apply=False,
-                        p=ssr_params["p"],
+                        p=sr_params["p"],
                     ),
-                    albu.GaussianBlur(blur_limit=0.1, p=0.9),  # Blur
+                    albu.GaussianBlur(blur_limit=0.1, p=sr_params["p"]),  # Blur
                 ],
-                p=0.4,
+                p=0.2,
             )
         ]
         self.compose = albu.Compose(self.description, p=1)
