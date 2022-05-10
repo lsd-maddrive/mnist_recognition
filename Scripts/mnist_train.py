@@ -14,10 +14,9 @@ from torch.utils.tensorboard import SummaryWriter
 from torchvision.transforms import transforms
 from tqdm import tqdm
 
-from object_detection.convertor import Convertor
 from object_detection.mnist_augmentation import AlbuAugmentation
 from object_detection.mnist_model import MNIST
-from object_detection.transform import Invertor
+from object_detection.transform import Convertor, Invertor
 
 CONFIG = {
     "batch_size": 200,
