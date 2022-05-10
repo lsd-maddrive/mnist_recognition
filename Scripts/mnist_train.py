@@ -14,10 +14,18 @@ from torch.utils.tensorboard import SummaryWriter
 from torchvision.transforms import transforms
 from tqdm import tqdm
 
+from object_detection.convertor import Convertor
+from object_detection.mnist_augmentation import AlbuAugmentation
 from object_detection.mnist_model import MNIST
 from object_detection.transform import Invertor
 
-CONFIG = {"batch_size": 200, "epoch": 100, "lr_rate": 0.01, "propotion": 0.7}
+CONFIG = {
+    "batch_size": 200,
+    "epoch": 100,
+    "lr_rate": 0.01,
+    "propotion": 0.7,
+    "Albu_transform": True,
+}
 
 
 # Определим устройство, на котором будут выполняться вычисления
@@ -25,7 +33,15 @@ DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
 def get_loaders():
-    data_transform = transforms.Compose([Invertor(), transforms.ToTensor()])
+
+    # По выбору добавляем в обучение альбументации
+
+    if CONFIG["Albu_transform"]:
+        data_transform = transforms.Compose(
+            [Invertor(), Convertor(), AlbuAugmentation(), transforms.ToTensor()]
+        )
+    else:
+        data_transform = transforms.Compose([Invertor(), transforms.ToTensor()])
 
     # загружаем обучающую выборку
     train_data = torchvision.datasets.MNIST(
@@ -123,7 +139,9 @@ def main():
                 if best_val_loss is None or epoch_mean_loss < best_val_loss:
                     best_val_loss = epoch_mean_loss
 
-                    checkpoint_path = os.path.join(checkpoint_dpath, "best.pth")
+                    checkpoint_path = os.path.join(
+                        checkpoint_dpath, "best_with_aug.pth"
+                    )
                     print(
                         f"*** Best state {best_val_loss} saved to {checkpoint_path}"
                     )
@@ -135,7 +153,7 @@ def main():
                         " Learning rate", optimizer.param_groups[0]["lr"], epoch
                     )
 
-        checkpoint_path = os.path.join(checkpoint_dpath, "last.pth")
+        checkpoint_path = os.path.join(checkpoint_dpath, "last_with_aug.pth")
         print(f"* Last state saved to {checkpoint_path}")
         save_state = {"model_state": model.state_dict()}
         torch.save(save_state, checkpoint_path)
