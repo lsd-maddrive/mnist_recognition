@@ -1,4 +1,8 @@
-# object_detection
+# MNIST Recognition
+
+<p align="center">
+<img src="https://medium.com/@pradnyasaval20/digit-recognition-on-mnist-dataset-using-convolution-neural-network-cnn-f52db46b3493">
+</p> 
 
 ## Содержание <a id="toc"></a>
 
