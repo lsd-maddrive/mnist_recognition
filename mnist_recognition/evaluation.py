@@ -5,11 +5,11 @@ import pandas as pd
 from sklearn.metrics import classification_report
 from tqdm import tqdm
 
-from mnist_recognition import mnist_inference
+from mnist_recognition import inference
 
 
 class MnistEvaluator:
-    def __init__(self, inference: mnist_inference.Inference, data: list):
+    def __init__(self, inference: inference.Inference, data: list):
         self._logger = logging.getLogger(self.__class__.__name__)
         self._infer = inference
         self._data = data

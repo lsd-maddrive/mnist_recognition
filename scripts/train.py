@@ -18,8 +18,7 @@ from torch.utils.tensorboard import SummaryWriter
 from torchvision.transforms import transforms
 from tqdm import tqdm
 
-from mnist_recognition.mnist_augmentation import AlbuAugmentation
-from mnist_recognition.transform import Convertor, Invertor
+from mnist_recognition.transforms import AlbuAugmentation, Convertor, Invertor
 
 logger = logging.getLogger("train")
 

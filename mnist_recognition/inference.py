@@ -14,7 +14,7 @@ from mnist_recognition.models import MlpModel
 
 
 class Inference:
-    def __init__(self, model, device) -> None:
+    def __init__(self, model, device):
         self._logger = logging.getLogger(self.__class__.__name__)
         self._model = model
         self._device = device
