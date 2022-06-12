@@ -1,41 +1,35 @@
+import logging
 import os
 import sys
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT_DIR = os.path.abspath(os.path.join(CURRENT_DIR, os.pardir))
+CONFIG_DPATH = os.path.join(ROOT_DIR, "config")
+
+# for pip-environment
 sys.path.append(ROOT_DIR)
 
+import hydra
 import numpy as np
 import torch
-import torch.nn as nn
 import torchvision
-from torch.optim.lr_scheduler import ReduceLROnPlateau
+from omegaconf import DictConfig
 from torch.utils.tensorboard import SummaryWriter
 from torchvision.transforms import transforms
 from tqdm import tqdm
 
-from object_detection.mnist_augmentation import AlbuAugmentation
-from object_detection.mnist_model import MNIST
-from object_detection.transform import Convertor, Invertor
+from mnist_recognition.mnist_augmentation import AlbuAugmentation
+from mnist_recognition.transform import Convertor, Invertor
 
-CONFIG = {
-    "batch_size": 200,
-    "epoch": 100,
-    "lr_rate": 0.01,
-    "propotion": 0.7,
-    "Albu_transform": True,
-}
-
+logger = logging.getLogger("train")
 
 # Определим устройство, на котором будут выполняться вычисления
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
-def get_loaders():
-
+def get_loaders(cfg: DictConfig):
     # По выбору добавляем в обучение альбументации
-
-    if CONFIG["Albu_transform"]:
+    if cfg.use_albumentations:
         data_transform = transforms.Compose(
             [Invertor(), Convertor(), AlbuAugmentation(), transforms.ToTensor()]
         )
@@ -44,14 +38,14 @@ def get_loaders():
 
     # загружаем обучающую выборку
     train_data = torchvision.datasets.MNIST(
-        "mnist_content",
+        os.path.join(ROOT_DIR, "data"),
         train=True,
         transform=data_transform,
         download=True,
     )
     # разделяем обучающую выборку на обучающую и валидационную выборки
     # 70% для обучения, 30% для валидации
-    train_size = int(len(train_data) * CONFIG["propotion"])
+    train_size = int(len(train_data) * cfg.train_size_prc)
     valid_size = len(train_data) - train_size
     train_data, valid_data = torch.utils.data.random_split(
         train_data, [train_size, valid_size]
@@ -60,46 +54,42 @@ def get_loaders():
     # Создаём лоядеры данных.
     # так как модель ожидает данные в определённой форме
     train_dataloader = torch.utils.data.DataLoader(
-        dataset=train_data, batch_size=CONFIG["batch_size"], shuffle=True
+        dataset=train_data, batch_size=cfg.batch_size, shuffle=True
     )
     valid_dataloader = torch.utils.data.DataLoader(
-        dataset=valid_data, batch_size=CONFIG["batch_size"], shuffle=False
+        dataset=valid_data, batch_size=cfg.batch_size, shuffle=False
     )
 
     return train_dataloader, valid_dataloader
 
 
-def main():
-
-    writer = SummaryWriter()
-    # Объект нашей модели
-    model = MNIST()
-    # сразу отправить модель на устройство
+@hydra.main(config_path=CONFIG_DPATH, config_name="train")
+def main(cfg: DictConfig):
+    # Объект модели
+    model = hydra.utils.instantiate(cfg.model)
+    # перевод модели на устройство (cpu or cuda)
     model = model.to(DEVICE)
 
-    # функция потерь
-    criterion = nn.CrossEntropyLoss()
     # алгоритм для расчёта градиентного спуска
-    optimizer = torch.optim.Adam(model.parameters(), lr=CONFIG["lr_rate"])
+    optimizer = hydra.utils.instantiate(
+        cfg.optimizer, params=model.parameters()
+    )
     # создаём сущность, которая автоматически уменьшит шаг обучения в случае,
     # когда функция потерь перестанет уменьшаться в течение N эпох (patience)
-    scheduler = ReduceLROnPlateau(
-        optimizer, mode="min", patience=10, min_lr=1e-8, verbose=True
-    )
+    scheduler = hydra.utils.instantiate(cfg.scheduler, optimizer=optimizer)
+    # функция потерь
+    criterion = hydra.utils.instantiate(cfg.criterion)
 
-    NUM_EPOCHS = CONFIG["epoch"]
+    writer = SummaryWriter()
 
-    checkpoint_dpath = os.path.join(
-        ROOT_DIR, "checkpoints", "mnist_checkpoints"
-    )
+    checkpoint_dpath = os.path.join(ROOT_DIR, "checkpoints")
     os.makedirs(checkpoint_dpath, exist_ok=True)
 
     best_val_loss = None
+    train_dataloader, valid_dataloader = get_loaders(cfg)
 
-    train_dataloader, valid_dataloader = get_loaders()
-
-    for epoch in range(NUM_EPOCHS):
-        print(f"--- Epoch {epoch} ---")
+    for epoch in range(cfg.num_epochs):
+        logger.info(f"--- Epoch {epoch} ---")
         for phase in ["train", "val"]:
             epoch_loss = []
             if phase == "train":
@@ -129,7 +119,7 @@ def main():
                     epoch_loss.append(loss.item())
 
             epoch_mean_loss = np.mean(epoch_loss)
-            print(
+            logger.info(
                 f"Stage: {phase.upper()}\t| Epoch Loss: {epoch_mean_loss:.10f}"
             )
 
@@ -141,7 +131,7 @@ def main():
                     checkpoint_path = os.path.join(
                         checkpoint_dpath, "best_with_aug.pth"
                     )
-                    print(
+                    logger.info(
                         f"*** Best state {best_val_loss} saved to {checkpoint_path}"
                     )
                     save_state = {"model_state": model.state_dict()}
@@ -153,7 +143,7 @@ def main():
                     )
 
         checkpoint_path = os.path.join(checkpoint_dpath, "last_with_aug.pth")
-        print(f"* Last state saved to {checkpoint_path}")
+        logger.info(f"* Last state saved to {checkpoint_path}")
         save_state = {"model_state": model.state_dict()}
         torch.save(save_state, checkpoint_path)
 

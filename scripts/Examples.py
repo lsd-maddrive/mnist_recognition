@@ -7,7 +7,7 @@ PROJECT_ROOT = os.path.abspath(
     os.path.join(os.path.dirname(__file__), os.pardir)
 )
 sys.path.append(PROJECT_ROOT)
-from object_detection.segmentation.utils import choose_threshold
+from mnist_recognition.segmentation.utils import choose_threshold
 
 
 def test_choose_threshold_func(path):

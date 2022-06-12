@@ -12,7 +12,7 @@ sys.path.append(ROOT_DIR)
 
 from torchvision.transforms import transforms
 
-from object_detection.mnist_model import MNIST
+from mnist_recognition.models import MNIST
 
 
 @pytest.fixture

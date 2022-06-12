@@ -5,7 +5,7 @@ import pandas as pd
 from sklearn.metrics import classification_report
 from tqdm import tqdm
 
-from object_detection import mnist_inference
+from mnist_recognition import mnist_inference
 
 
 class MnistEvaluator:

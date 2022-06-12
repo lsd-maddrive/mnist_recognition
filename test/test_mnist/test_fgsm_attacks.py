@@ -8,7 +8,7 @@ CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT_DIR = os.path.abspath(os.path.join(CURRENT_DIR, os.pardir, os.pardir))
 sys.path.append(ROOT_DIR)
 
-from object_detection.fgsm_attack import fgsm_attack
+from mnist_recognition.fgsm_attack import fgsm_attack
 
 
 def test_fgsm_attack_return_type(model_grad, epsilon_05):

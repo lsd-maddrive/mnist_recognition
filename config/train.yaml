@@ -1,0 +1,30 @@
+project_name: MNIST classification
+
+num_epochs: 100
+seed: 42
+lr: 1.0e-4
+
+num_workers: -1
+batch_size: 64
+
+train_size_prc: 0.7
+
+use_albumentations: True
+
+optimizer:
+  _target_: torch.optim.Adam
+  lr: ${lr}
+
+scheduler:
+  _target_: torch.optim.lr_scheduler.ReduceLROnPlateau
+  # Must be tuned based on samples count
+  patience: 10
+  factor: 0.5
+  min_lr: 1.0e-7
+  verbose: True
+
+criterion:
+  _target_: torch.nn.CrossEntropyLoss
+
+model:
+  _target_: mnist_recognition.models.MlpModel

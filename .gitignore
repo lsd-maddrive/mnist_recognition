@@ -143,3 +143,9 @@ runs
 
 # mnist predictions content
 results
+
+# hydra logs
+outputs
+
+# source data
+data

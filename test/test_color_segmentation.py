@@ -1,14 +1,14 @@
 import os
 import sys
 
-
 PROJECT_ROOT = os.path.abspath(
     os.path.join(os.path.dirname(__file__), os.pardir)
 )
 sys.path.append(PROJECT_ROOT)
 
-from object_detection.segmentation.color_segmentation import color_segmentation
 import numpy as np
+
+from mnist_recognition.segmentation.color_segmentation import color_segmentation
 
 
 def test_color_segmentation_sample_1(

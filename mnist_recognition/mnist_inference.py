@@ -10,7 +10,7 @@ import logging
 import numpy as np
 import torch
 
-from object_detection.mnist_model import MNIST
+from mnist_recognition.models import MlpModel
 
 
 class Inference:
@@ -41,7 +41,7 @@ class Inference:
     def from_checkpoint(cls, checkpoint_state: dict, **kwargs):
         model_state = checkpoint_state["model_state"]
 
-        model = MNIST()
+        model = MlpModel()
         model.load_state_dict(model_state)
 
         obj_ = cls(model=model, **kwargs)
