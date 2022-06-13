@@ -2,10 +2,8 @@ import os
 import sys
 
 ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
+# for pip environment
 sys.path.append(ROOT_DIR)
-
-
-import logging
 
 import numpy as np
 import torch
@@ -15,7 +13,6 @@ from mnist_recognition.models import MlpModel
 
 class Inference:
     def __init__(self, model, device):
-        self._logger = logging.getLogger(self.__class__.__name__)
         self._model = model
         self._device = device
         self._prepare_model()

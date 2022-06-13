@@ -9,7 +9,7 @@ batch_size: 64
 
 train_size_prc: 0.7
 
-use_albumentations: True
+use_albumentations: False
 
 optimizer:
   _target_: torch.optim.Adam

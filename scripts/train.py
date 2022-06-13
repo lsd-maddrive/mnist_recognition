@@ -19,6 +19,7 @@ from torchvision.transforms import transforms
 from tqdm import tqdm
 
 from mnist_recognition.transforms import AlbuAugmentation, Convertor, Invertor
+from mnist_recognition.utils.fs import get_date_string
 
 logger = logging.getLogger("train")
 
@@ -81,12 +82,15 @@ def main(cfg: DictConfig):
 
     writer = SummaryWriter()
 
-    checkpoint_dpath = os.path.join(ROOT_DIR, "checkpoints")
+    checkpoint_dpath = os.path.join(
+        ROOT_DIR, "train_checkpoints", get_date_string()
+    )
     os.makedirs(checkpoint_dpath, exist_ok=True)
+    checkpoint_name = "with_albumentations" if cfg.use_albumentations else ""
+    checkpoint_name += f"_{get_date_string()}.pth"
 
     best_val_loss = None
     train_dataloader, valid_dataloader = get_loaders(cfg)
-
     for epoch in range(cfg.num_epochs):
         logger.info(f"--- Epoch {epoch} ---")
         for phase in ["train", "val"]:
@@ -126,9 +130,8 @@ def main(cfg: DictConfig):
                 writer.add_scalar("Loss/valid", loss, epoch)
                 if best_val_loss is None or epoch_mean_loss < best_val_loss:
                     best_val_loss = epoch_mean_loss
-
                     checkpoint_path = os.path.join(
-                        checkpoint_dpath, "best_with_aug.pth"
+                        checkpoint_dpath, f"best_valid_{checkpoint_name}"
                     )
                     logger.info(
                         f"*** Best state {best_val_loss} saved to {checkpoint_path}"
@@ -141,7 +144,9 @@ def main(cfg: DictConfig):
                         " Learning rate", optimizer.param_groups[0]["lr"], epoch
                     )
 
-        checkpoint_path = os.path.join(checkpoint_dpath, "last_with_aug.pth")
+        checkpoint_path = os.path.join(
+            checkpoint_dpath, f"last_{checkpoint_name}.pth"
+        )
         logger.info(f"* Last state saved to {checkpoint_path}")
         save_state = {"model_state": model.state_dict()}
         torch.save(save_state, checkpoint_path)

@@ -8,7 +8,7 @@ from tqdm import tqdm
 from mnist_recognition import inference
 
 
-class MnistEvaluator:
+class Evaluator:
     def __init__(self, inference: inference.Inference, data: list):
         self._logger = logging.getLogger(self.__class__.__name__)
         self._infer = inference

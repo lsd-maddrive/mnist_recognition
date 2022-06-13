@@ -132,16 +132,13 @@ dmypy.json
 .vscode/
 settings.json
 
-# MNIST content
-mnist_content
-
-# MNIST checkpoints
-checkpoints
+# checkpoints
+train_checkpoints
 
 # Tensorboard runs
 runs
 
-# mnist predictions content
+# evaluation cache
 results
 
 # hydra logs
